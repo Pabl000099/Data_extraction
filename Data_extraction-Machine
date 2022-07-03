@@ -110,7 +110,7 @@ while (count_end < 2){
 x_matrix <- x_matrix[,-1]
 AFRend_matrix <- end_matrix[,-1]
 
-#en africa..................................
+#AFR DATA..................................
 #definition of matrix for new data
 AFR_matrix <- matrix()
 AFRend_matrix <- matrix()
@@ -174,7 +174,7 @@ AFR_matrix <- AFR_matrix[,-1]
 AFRend_matrix <- AFRend_matrix[,-1]
 
 
-#EAS---------------------------------------------------------------------------------
+#EAS DATA---------------------------------------------------------------------------------
 #definition of matrix for new data
 EAS_matrix <- matrix()
 EASend_matrix <- matrix()
@@ -237,7 +237,7 @@ while ( EAScount_end < 2){
 EAS_matrix <- EAS_matrix[,-1]
 EASend_matrix <- EASend_matrix[,-1]
 
-#AMERICA ---------------------------------------------------------------
+#AMR DATA---------------------------------------------------------------
 #definition of matrix for new data 
 SAS_matrix <- matrix()
 SASend_matrix <- matrix()
@@ -310,5 +310,5 @@ population_SAS <- as.numeric(length(SAS_matrix))
 
 #ploting of vector at population
 vector = c(population_EURO, population_AMR, population_AFR, Population_EAS, population_SAS)
-barplot(vector,xlab="Europa                          America                        Africa                        EsteAsia                       SurAsia", ylab="FREQUENCY", main = "POPULATION BY CONTINET")
+barplot(vector,xlab="EURO                         AMR                        AFR                       EAS                       SAS", ylab="FREQUENCY", main = "POPULATION BY CONTINET")
 show(vector)
