@@ -1,0 +1,314 @@
+library(vcfR)
+library(readr)
+library(tidyverse)
+library(dplyr)
+library(purrr)
+# /.vcf /  folder files selection  
+setwd("C:/Users/LAPTOP/Desktop/amphora healt/Challenge/samples/Challenge Samples/archivosvfc")
+files= list.files(pattern = ".vcf")
+#read all files
+read_files<- lapply(files, read.vcfR )
+
+#assignement value 0 to an matrix
+file_matrix <- matrix()
+#for loop to select the GT column in a file
+for (i in seq_along(read_files)){
+  #reading files one one at a time
+  Date_Table= read.table(files[i])
+  #changing the column name to GT
+  names (Date_Table)[10] = "GT"
+
+  GT_selection <- select(Date_Table,GT)
+  # colocation of GT selection in an matrix
+  file_matrix <- cbind(file_matrix,GT_selection)
+}
+#cleaning the final matrix, deletion of first column 
+file_matrix <- file_matrix[,-1]
+
+#changing the folder file selection
+setwd("C:/Users/LAPTOP/Desktop/amphora healt/Challenge/samples/Challenge Samples")
+#read all files
+file= list.files(pattern = ".csv")
+read_file <- lapply(file,read.csv)
+#assignement value 0 to an matrix
+files_matrix <- matrix()
+#for loop to select the GT column in a file
+for (i in seq_along(file)){
+  #reading files one one at a time
+  data <- read_file[i]
+  data <- as.data.frame(data)
+  #changing the column name to GT
+  colnames (data) [5] <- "GT"
+  # colocation of GT selection in an matrix
+  files_matrix <- select(data,GT)
+  #matrix union
+  file_matrix <- cbind(file_matrix,files_matrix)
+}
+
+
+#EURO DATA
+#definition of matrix for new data
+x_matrix <- matrix()
+end_matrix <- matrix()
+x <- c()
+y <- c()
+z <- c()
+#definition for stop counter loop
+count_1 <- 0
+count_end <- 0
+##read refence poulation file to compare the data
+data <- read.csv("C:/Users/LAPTOP/Desktop/amphora healt/Challenge/samples/Challenge Samples/75240c09-57b6-5579-bb62-0cc50247dae2.csv")
+colnames (data) [5] <- "GT"
+options(max.print=10)
+len <- length(file_matrix)
+select_dat <- select(data,GT)
+name.vecs <- as.vector(select_dat$GT)
+#while loop to read the file matrix
+while (count_end < 2){
+  count_1 <- count_1+1
+#if count_1 dont have the limit of len, has do a for loop
+  if (count_1 <= len){
+    mydata <- select (file_matrix ,count_1)
+    name.vec <- as.vector(mydata$GT)
+    select_dat <- select(data,GT)
+    name.vecs <- as.vector(select_dat$GT)
+#for loop compare the reference file with all the data files
+    for (i in seq_along(name.vec)){
+      x <- c(name.vec[i])
+      y <- c(name.vecs[i])
+#if the data file is diferent to reference file its almacened in a matrix to count the data
+      if (!x %in% y){
+        z[i] <- c(x)
+      }
+      else{
+        z[i] <- NA
+      }
+      x <- c()
+      y <- c()
+    }
+#the diferences are deleteds from the matrix
+    data_out <- c()
+    data_out <- z[! is.na (z)]
+    
+#is obtained the percentage of the similar files
+    data_len <- length(data_out)
+    percentage <- (data_len*100)/(10028)
+#depending of the percentage are almaceneds in differentes matrix
+    if (percentage <= 42){
+      x_matrix <- cbind(x_matrix,mydata)
+    } 
+    else{
+      end_matrix <- cbind(end_matrix,mydata)
+    }
+  }
+  else if (count_1 > len){
+    count_end <- 2
+  }
+}
+#if the data is almacened in the first matrix, this will be the value of the population
+#if the data is almacened in the second matrix, this will be the value to determine the next population
+x_matrix <- x_matrix[,-1]
+AFRend_matrix <- end_matrix[,-1]
+
+#en africa..................................
+#definition of matrix for new data
+AFR_matrix <- matrix()
+AFRend_matrix <- matrix()
+x1 <- c()
+y1 <- c()
+z1 <- c()
+#definition for stop counter loop
+AFRcount_1 <- 0
+AFRcount_end <- 0
+len1 <- length(end_matrix)
+##read refence poulation file to compare the data
+AFR_data <- read.csv("C:/Users/LAPTOP/Desktop/asa/AFR/e34a9b3f-c846-5d7a-96c4-2a45be7bfa86.csv")
+colnames (AFR_data) [5] <- "GT"
+options(max.print=10)
+AFR_seldat <- select(AFR_data,GT)
+name.vecs1 <- as.vector(AFR_seldat$GT)
+#while loop to read the file matrix
+while ( AFRcount_end < 2){
+  AFRcount_1 <- AFRcount_1+1
+#if count_1 dont have the limit of len, has do a for loop
+  if (AFRcount_1 <= len1){
+    AFR_mydata <- select (end_matrix ,AFRcount_1)
+    name.vec1 <- as.vector( AFR_mydata$GT)
+    AFR_seldat <- select(AFR_data,GT)
+    name.vecs1 <- as.vector(AFR_seldat$GT)
+#for loop compare the reference file with all the data files    
+    for (i in seq_along(name.vec1)){
+      x1 <- c(name.vec1[i])
+      y1 <- c(name.vecs1[i])
+#if the data file is diferent to reference file its almacened in a matrix to count the data    
+      if (!x1 %in% y1){
+        z1[i] <- c(x1)
+      }
+      else{
+        z1[i] <- NA
+      }
+      x1 <- c()
+      y1 <- c()
+    }
+#the diferences are deleteds from the matrix    
+    AFRdata_out <- c()
+    AFRdata_out <- z1[! is.na (z1)]
+#is obtained the percentage of the similar files
+    AFRpercentage <- length(AFRdata_out)
+    ecua1 <- (AFRpercentage*100)/(10028)
+ #depending of the percentage are almaceneds in differentes matrix
+    if (ecua1 <= 42){
+      AFR_matrix <- cbind(AFR_matrix, AFR_mydata)
+    } 
+    else{
+      AFRend_matrix <- cbind(AFRend_matrix, AFR_mydata)
+    }
+  }
+  else if (AFRcount_1 > len1){
+    AFRcount_end <- 2
+  }
+}
+#if the data is almacened in the first matrix, this will be the value of the population
+#if the data is almacened in the second matrix, this will be the value to determine the next population
+AFR_matrix <- AFR_matrix[,-1]
+AFRend_matrix <- AFRend_matrix[,-1]
+
+
+#EAS---------------------------------------------------------------------------------
+#definition of matrix for new data
+EAS_matrix <- matrix()
+EASend_matrix <- matrix()
+x2 <- c()
+y2 <- c()
+z2 <- c()
+EAScount_1 <- 0
+EAScount_end <- 0
+len2 <- length(end_matrix)
+##read refence poulation file to compare the data
+EAS_data <- read.csv("C:/Users/LAPTOP/Desktop/asa/EAS/b324a10c-e897-5f9e-a68f-e8b07bdeaaf4.csv")
+colnames (EAS_data) [5] <- "GT"
+options(max.print=10)
+EAS_seldat <- select(EAS_data,GT)
+name.vecs1 <- as.vector(EAS_seldat$GT)
+#while loop to read the file matrix
+while ( EAScount_end < 2){
+  EAScount_1 <- EAScount_1+1
+#if count_1 dont have the limit of len, has do a for loop
+    if (EAScount_1 <= len2){
+    EAS_mydata <- select (AFRend_matrix ,EAScount_1)
+    name.vec2 <- as.vector( EAS_mydata$GT)
+    EAS_seldat <- select(EAS_data,GT)
+    name.vecs2 <- as.vector(EAS_seldat$GT)
+#for loop compare the reference file with all the data files      
+    for (i in seq_along(name.vec2)){
+      x2 <- c(name.vec2[i])
+      y2 <- c(name.vecs2[i])
+#if the data file is diferent to reference file its almacened in a matrix to count the data
+      if (!x2 %in% y2){
+        z2[i] <- c(x2)
+      }
+      else{
+        z2[i] <- NA
+      }
+      x2 <- c()
+      y2 <- c()
+    }
+#the diferences are deleteds from the matrix   
+    EASdata_out <- c()
+    EASdata_out <- z2[! is.na (z2)]
+    
+#is obtained the percentage of the similar files 
+    EASpercentage <- length(EASdata_out)
+    ecua2 <- (EASpercentage*100)/(10028)
+#depending of the percentage are almaceneds in differentes matrix    
+    if (ecua2 <= 39){
+      EAS_matrix <- cbind(EAS_matrix, EAS_mydata)
+    } 
+    else{
+      EASend_matrix <- cbind(EASend_matrix, EAS_mydata)
+    }
+  }
+  else if (EAScount_1 > len2){
+    EAScount_end <- 2
+  }
+}
+#if the data is almacened in the first matrix, this will be the value of the population
+#if the data is almacened in the second matrix, this will be the value to determine the next population
+EAS_matrix <- EAS_matrix[,-1]
+EASend_matrix <- EASend_matrix[,-1]
+
+#AMERICA ---------------------------------------------------------------
+#definition of matrix for new data 
+SAS_matrix <- matrix()
+SASend_matrix <- matrix()
+x3 <- c()
+y3 <- c()
+z3 <- c()
+SAScount_1 <- 0
+SAScount_end <- 0
+##read refence poulation file to compare the data
+SASdata <- read.csv("C:/Users/LAPTOP/Desktop/amphora healt/Challenge/samples/Challenge Samples/65977cdd-b977-50e5-af68-63415adce2fa.csv")
+colnames (SASdata) [5] <- "GT"
+options(max.print=10)
+len3 <- length(EASend_matrix)
+SASselect_dat <- select(SASdata,GT)
+name.vecs3 <- as.vector(SASselect_dat$GT)
+#while loop to read the file matrix
+while (SAScount_end < 2){
+  SAScount_1 <- SAScount_1+1
+#if count_1 dont have the limit of len, has do a for loop
+  if (SAScount_1 <= len3){
+    SASmydata <- select (EASend_matrix ,SAScount_1)
+    name.vec3 <- as.vector(SASmydata$GT)
+    SASselect_dat <- select(SASdata,GT)
+    name.vecs3 <- as.vector(SASselect_dat$GT)
+#for loop compare the reference file with all the data files      
+    for (i in seq_along(name.vec3)){
+      x3 <- c(name.vec3[i])
+      y3 <- c(name.vecs3[i])
+#if the data file is diferent to reference file its almacened in a matrix to count the data
+      if (!x3 %in% y3){
+        z3[i] <- c(x3)
+      }
+      else{
+        z3[i] <- NA
+      }
+      x3 <- c()
+      y3 <- c()
+    }
+#the diferences are deleteds from the matrix   
+    SASdata_out <- c()
+    SASdata_out <- z3[! is.na (z3)]
+    
+#is obtained the percentage of the similar files
+    SASdata_len <- length(SASdata_out)
+    SASpercentage <- (SASdata_len*100)/(10028)
+#depending of the percentage are almaceneds in differentes matrix
+    if (SASpercentage <= 42){
+      SAS_matrix <- cbind(SAS_matrix,SASmydata)
+    } 
+    else{
+      SASend_matrix <- cbind(SASend_matrix,SASmydata)
+    }
+  }
+  else if (SAScount_1 > len3){
+    SAScount_end <- 2
+  }
+}
+#if the data is almacened in the first matrix, this will be the value of the population
+#if the data is almacened in the second matrix, this will be the value to determine the next population
+SAS_matrix <- SAS_matrix[,-1]
+SASend_matrix <- SASend_matrix[,-1]
+
+
+#Data population at numeric and converted to vector
+population_EURO <- as.numeric(length(x_matrix))
+population_AMR <- as.numeric(length(SASend_matrix))
+population_AFR <- as.numeric(length(AFR_matrix))
+Population_EAS <- as.numeric(length(EAS_matrix))
+population_SAS <- as.numeric(length(SAS_matrix))
+
+#ploting of vector at population
+vector = c(population_EURO, population_AMR, population_AFR, Population_EAS, population_SAS)
+barplot(vector,xlab="Europa                          America                        Africa                        EsteAsia                       SurAsia", ylab="FREQUENCY", main = "POPULATION BY CONTINET")
+show(vector)
