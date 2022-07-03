@@ -312,3 +312,7 @@ population_SAS <- as.numeric(length(SAS_matrix))
 vector = c(population_EURO, population_AMR, population_AFR, Population_EAS, population_SAS)
 barplot(vector,xlab="EURO                         AMR                        AFR                       EAS                       SAS", ylab="FREQUENCY", main = "POPULATION BY CONTINET")
 show(vector)
+
+#The cluster assignement was realized from comparaction of GT secuencies, however the assignement deppending 
+#of a base file to make posible the comparation, rigth now the code can do around 70% of asignement able, but could be 
+improved with the correct file
