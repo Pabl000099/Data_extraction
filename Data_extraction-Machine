@@ -44,7 +44,7 @@ for (i in seq_along(file)){
   #matrix union
   file_matrix <- cbind(file_matrix,files_matrix)
 }
-
+show(file_matrix)
 
 #EURO DATA
 #definition of matrix for new data
